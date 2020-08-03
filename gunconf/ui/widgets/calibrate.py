@@ -41,6 +41,7 @@ class BgdTarget(widget.Widget):
 
             # update positions
             self._oldX, self._oldY = self.x, self.y
+            print(f"Calibration (X {self.x}, Y {self.y})")
 
         return rcts
 
@@ -130,6 +131,7 @@ class CalibrationWnd(gui.container.Container):
             if w > self._scnW:
                 w = self._scnW
                 h = w * 9 / 16
+        print (f"Width = {w}, Height = {h}")
 
         self._bgdW = w
         self._bgdH = h
@@ -169,14 +171,17 @@ class CalibrationWnd(gui.container.Container):
 
         update = False
 
-        x = pos['x'] if pos.has_key('x') else None
-        y = pos['y'] if pos.has_key('y') else None
+#        print(f"Gun position (x,y,w,h) ({pos['x']},{pos['y']},{pos['w']},{pos['h']})")
+        print (f"Gun position: {pos}")
+
+        x = pos['x'] if 'x' in pos else None
+        y = pos['y'] if 'y' in pos else None
 
         if x and x != self._gunPos['x']:
             # we have a new x
             self._gunPos['x'] = x
             # compute pointer position
-            self._bgd.x = x * self._bgdW / pos['w']
+            self._bgd.x = int(x * self._bgdW / pos['w'])
             # ask for a repaint
             update = True
 
@@ -184,7 +189,7 @@ class CalibrationWnd(gui.container.Container):
             # we have a new y
             self._gunPos['y'] = y
             # compute pointer position
-            self._bgd.y = y * self._bgdH / pos['h']
+            self._bgd.y = int(y * self._bgdH / pos['h'])
             # ask for a repaint
             update = True
 

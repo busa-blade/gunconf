@@ -1,9 +1,10 @@
 import usb.core
 import usb.util
 import logging
-from conversion import *
+from .conversion import *
 import gunconf
 import time
+import binascii
 
 
 class Aimtrak(object):
@@ -37,9 +38,19 @@ class Aimtrak(object):
         cnf = self._dev.get_active_configuration()
         self._intf = cnf.interfaces()[0] # get interface 0
         if self._dev.is_kernel_driver_active(0):
+            try:
             # Detach kernel drivers and claim through libusb
-            self._dev.detach_kernel_driver(0)
+                self._dev.detach_kernel_driver(0)
+                print("Kernel driver detached")
+            except usb.core.USBError as e:
+                sys.exit("Could not detach kernel driver: %s" % str(e))
+        else:
+            print ("No kernel driver attached")
+        try:
             usb.util.claim_interface(self._dev, 0)
+            print ("claimed device")
+        except:
+            sys.exit("Could not claim the device: %s" % str(e))
 
         # flush interrupt IN pipe
         self._getReport(timeout=500)
@@ -47,24 +58,34 @@ class Aimtrak(object):
 
     def _setReport(self, pReport):
         """ set a report on the device """
-        self._dev.ctrl_transfer(bmRequestType = 0x21, # Set_Report Request
+        bytessent = self._dev.ctrl_transfer(bmRequestType = 0x21, # Set_Report Request
                                 bRequest      = 0x09, # SET_REPORT
                                 wValue        = 0x200, # report type = output, report ID = 0
                                 wIndex        = 0, # interface 0
                                 data_or_wLength = pReport)
+        print(f"Sent {bytessent} over interface")
 
 
     def _getReport(self, length=-1, timeout=None):
+        if length == -1:
+            readlength = 256
+        else:
+            readlength = length
+        bytesatatime = 4
         """ read from the device """
+        print (f"Length to read is {length} and timeout is {timeout}")
         ret = []
         ep = self._intf.endpoints()[0] # interrupt IN endpoint (there is only one)
         try:
-            while length != len(ret):
+            while len(ret) < readlength:
                 # it seems that a timeout of 100msecs is ok
-                ret += self._dev.read(ep, 256, timeout=timeout)
+                ret += self._dev.read(ep, bytesatatime, timeout=timeout)
+                print ("Read %d bytes from interface" % len(ret))
+            print (f"Bytes: {ret}")
         except usb.USBError as e:
             if e.errno == 110: #timeout (can't find a const in pyusb for it...)
                 self._l.info("operation timeout")
+                print(str(e))
             else:
                 self._l.error("can't get report \"%s\"", e)
 
@@ -72,8 +93,8 @@ class Aimtrak(object):
 
 
     def _getConfig(self):
-        self._setReport([0x5A, 0xEE])
-        return self._getReport(40)
+        self._setReport([0x5A, 0xEE, 0x00, 0x00])
+        return self._getReport(length=40)
 
 
     def getConfig(self):
@@ -87,6 +108,7 @@ class Aimtrak(object):
     def setConfig(self, cnf):
         """ set config """
         buf = self._getConfig()
+        print (f"Gun configuration is {buf}")
 
         # modify it
         buf = config_to_buffer(cnf, buf)
@@ -101,7 +123,7 @@ class Aimtrak(object):
             if 1<= id <= 8:
                 self._l.info("change devID to 0x%x (old was 0x%x)",
                              cnf['idProduct'], self._dev.idProduct)
-                self._setReport([0x50+id, 0xEE])
+                self._setReport([0x50+id, 0xEE, 0x00, 0x00])
                 # device shall be disconnected
                 return True
 
@@ -109,14 +131,14 @@ class Aimtrak(object):
 
 
     def recoil(self):
-        self._setReport([0x5C, 0xEE])
+        self._setReport([0x5C, 0xEE, 0x00, 0x00])
         # we lose the gun if we don't sleep here
         time.sleep(0.5)
 
 
     def getDynData(self):
         """ get dynamic data """
-        self._setReport([0x59, 0xEE])
+        self._setReport([0x59, 0xEE, 0x00, 0x00])
         ret = self._getReport(length=32)
 
         return dyn_data_from_buffer(ret)
@@ -141,7 +163,7 @@ if __name__ == '__main__':
     gun = Aimtrak()
     cnf = gun.getConfig()
 
-    print "configuration is ", cnf
+    print (f"configuration is {cnf}")
 
     #cnf['joystick'] = False
 
@@ -175,12 +197,12 @@ if __name__ == '__main__':
         gun.close()
         time.sleep(5)
 
-        print "sleep 5 seconds to let device reboot"
+        print ("sleep 5 seconds to let device reboot")
         gun = Aimtrak()
         gun.getConfig()
 
     try:
         while True:
-            print gun.getDynData()
+            print (gun.getDynData())
     except KeyboardInterrupt:
         gun.close()

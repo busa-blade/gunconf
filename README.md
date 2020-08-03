@@ -3,7 +3,7 @@ Gunconf
 
 Gunconf is an utility to configure [Aimtrak guns](https://www.ultimarc.com/aimtrak.html) on linux systems
 
-It is tested on ubuntu desktop and retropie.
+It is tested on ubuntu desktio and retropie. This is a fork of the original code from https://github.com/gunpadawan/gunconf updated to run with python3. Without the code written by this user, this update would not have been possible. My hats off to the original developer.
 
 Written in python on top of pygame, it **does not require an x server.**
 
@@ -14,10 +14,10 @@ Written in python on top of pygame, it **does not require an x server.**
 # Install
 ## Prerequisites
 
-`sudo apt install apt-transport-https python-dev python-pygame python-setuptools`
+`sudo apt install apt-transport-https python3-dev python3-pygame python3-setuptools python3-evdev python3-usb`
 
 ## Get the source
-`git clone https://github.com/gunpadawan/gunconf`
+`git clone https://github.com/busa-blade/gunconf`
 
 ## Install python module
 `cd gunconf`
@@ -105,7 +105,7 @@ connect to your pi through ssh:
 
 `mv daphne.sh daphne.sh.bak`
 
-`wget "https://raw.githubusercontent.com/gunpadawan/RetroPie-Setup/master/scriptmodules/emulators/daphne.sh"`
+`wget "https://raw.githubusercontent.com/busa-blade/RetroPie-Setup/master/scriptmodules/emulators/daphne.sh"`
 
 launch Retropie-Setup from the retropie menu and install daphne emulator from source
 

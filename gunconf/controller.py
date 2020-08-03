@@ -1,8 +1,8 @@
 #from gunconf import mouses
 from threading import *
 import time
-from drivers.mouse import AbsMouseManager
-from drivers.aimtrak import Aimtrak
+from .drivers.mouse import AbsMouseManager
+from .drivers.aimtrak import Aimtrak
 import pyudev
 from collections import defaultdict
 from logging import *
@@ -54,23 +54,22 @@ gStateTrans  = {'scanning' :      {'connect': ('connecting', False), \
 
 
 
-class Controler(Thread):
+class Controller():
     def __init__(self):
-        Thread.__init__(self)
 
         # init state machine
         self._machine   = StateMachine(self, gStateTrans, 'scanning')
         # add valid transition for all states
         self._machine.addTransition('*', 'disconnect', 'disconnecting', True)
         self._machine.addTransition('*', 'error', 'inerror', True)
-
+        self._mythread = Thread(target=self.main_loop)
         # init mouse manager
         self._mouses    = AbsMouseManager()
         # init thread sync objects
         self._lock      = Lock()
         self._stop      = Event()
         # init logger
-        self._l         = getLogger('gunconf.Controler')
+        self._l         = getLogger('gunconf.Controller')
 
         # callback
         self.cb         = None
@@ -100,8 +99,12 @@ class Controler(Thread):
         """ set callback, must be called before start() """
         self.cb = pCb
 
-
     def run(self):
+        self._mythread.start();
+
+
+    def main_loop(self):
+
         """ main loop """
         while not self._stop.isSet():
             # handle state
@@ -119,7 +122,7 @@ class Controler(Thread):
     def stop(self):
         """ stop thread """
         self._stop.set()
-        self.join()
+        self._mythread.join()
 
 
     ######################################################
@@ -280,7 +283,7 @@ class Controler(Thread):
 
 if __name__ == '__main__':
 
-    getLogger('gunconf.Controler').setLevel(DEBUG)
+    getLogger('gunconf.Controller').setLevel(DEBUG)
     #getLogger('gunconf.drivers.Aimtrak').setLevel(DEBUG)
     #getLogger('gunconf.drivers.AbsMouseManager').setLevel(DEBUG)
 
@@ -294,33 +297,33 @@ if __name__ == '__main__':
             if 'irtesting'==state:
                 self._counter+=1
                 if not (self._counter % self.loop):
-                    controler.transit('irtested')
-                print "dyndata ", self._cont.get('dynData')
+                    controller.transit('irtested')
+                print ("dyndata {}" % format(self._cont.get('dynData')))
             elif 'loaded'==trans:
                 while True:
-                    controler.state_calibrating()
-                    controler.state_irtesting()
+                    controller.state_calibrating()
+                    controller.state_irtesting()
             else:
-                print "callback for %s->%s" % (trans, state)
+                print (f"callback for {trans}->{state}")
 
-    # init controler
-    controler = Controler()
+    # init controller
+    controller = Controller()
 
     # init inner helper class
-    test = unittest(controler)
+    test = unittest(controller)
 
     # set callback
-    controler.setCb(test.cb)
+    controller.setCb(test.cb)
 
-    # start controler
-    controler.start()
+    # start controller
+    controller.start()
 
     time.sleep(1)
     # change to connect
-    controler.transit('connect')
+    controller.transit('connect')
 
     import IPython; IPython.embed() # XXX BREAKPOINT
 
 
     # exit gracefully
-    controler.stop()
+    controller.stop()

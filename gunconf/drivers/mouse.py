@@ -23,7 +23,7 @@ class AbsMouseManager(object):
         self._devs = {}
         for name in evdev.list_devices():
             dev = evdev.InputDevice(name)
-            if dev.capabilities().has_key(ecodes.EV_ABS):
+            if ecodes.EV_ABS in dev.capabilities():
                 if not pVendor or pVendor == dev.info.vendor:
                     self._devs[name] = dev
 
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     mouseManager.scan()
     name = None
-    print mouseManager._devs
+    print (mouseManager._devs)
 
     # connect to the first mouse on which something happen
     while True:
@@ -99,5 +99,5 @@ if __name__ == '__main__':
     while True:
         status = mouseManager.update(name)
         if status:
-            print status
+            print (status)
         time.sleep(1.0/50)

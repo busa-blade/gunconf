@@ -1,6 +1,6 @@
 import argparse
 from gunconf.ui.gunapp import GunApp
-from gunconf.controler import Controler
+from gunconf.controller import Controller
 
 def parseArgs():
     """ parse arguments """
@@ -17,13 +17,13 @@ if __name__ == '__main__':
     args = parseArgs()
 
     # allocate controler
-    controler = Controler()
+    controller = Controller()
 
     # allocate app
     app = GunApp(args.width, args.height)
-    app.setCtrl(controler)
+    app.setCtrl(controller)
 
-    controler.setCb(app.ctrlCb)
-    controler.start()
+    controller.setCb(app.ctrlCb)
+    controller.run()
 
     app.run()

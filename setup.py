@@ -17,11 +17,11 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/gunpadawan/gunconf',
+    url='https://github.com/busa-blade/gunconf',
 
     # Author details
-    author='gunpadawan',
-    author_email='',
+    author='busa.blade',
+    author_email='busa.blade@gmail.com',
     license='MIT',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -32,20 +32,20 @@ setup(
         #   5 - Production/Stable
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.0',
     ],
 
     packages=find_packages(),
 
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['evdev>=0.6.4',
-                      'pyusb>=1.0.0',
-                      'pgu>=0.18',
-                      'pyudev>=0.21'],
+    install_requires=['evdev>=1.3',
+                      'pyusb>=1.0.2',
+                      'pygame-pgu>=0.21',
+                      'pyudev>=0.22.0'],
 
-    dependency_links = [
-     "https://github.com/gunpadawan/pgu/tarball/master#egg=pgu-0.18",
-    ],
+#    dependency_links = [
+#     "https://github.com/gunpadawan/pgu/tarball/master#egg=pgu-0.18",
+#    ],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these

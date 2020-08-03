@@ -10,7 +10,7 @@ class SensorView(object):
         # text on the left
         tbl2 = gui.Table()
         tbl2.tr()
-        txt = _("To ckeck operation\n"
+        txt = _("To check operation\n"
                 "Aim gun sight at monitor\n"
                 "Move gun within monitor boundary.\n"
                 "Ensure IR point is visible\n"

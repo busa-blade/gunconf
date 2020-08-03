@@ -14,7 +14,7 @@ _transDct= {'left'   : 'button0',
             None     : None}
 
 
-def _slChange((sl, input)):
+def _slChange(sl, input):
     input.value = sl.value
 
 
@@ -44,7 +44,7 @@ def _buildSltCb(tt):
     return (slt, chkbox)
 
 
-def _ckbClicked((ckb, obj)):
+def _ckbClicked(ckb, obj):
     obj.disabled = ckb.value
 
 
@@ -93,7 +93,7 @@ class ConfigView(object):
                                      height=pSize['s_h'])
         irTbl.td(self.irGainSl)
         txt = gui.Input(size=5)
-        self.irGainSl.connect(gui.CHANGE, _slChange, (self.irGainSl, txt))
+        self.irGainSl.connect(gui.CHANGE, _slChange, *(self.irGainSl, txt))
         txt.focusable = False
         self.irGainSl.send(gui.CHANGE)
         irTbl.td(txt)
@@ -104,7 +104,7 @@ class ConfigView(object):
         irTbl.td(gui.Spacer(10,5))
         irTbl.tr()
         chkbox = gui.Switch()
-        chkbox.connect(gui.CLICK, _ckbClicked, (chkbox, self.irGainSl))
+        chkbox.connect(gui.CLICK, _ckbClicked, *(chkbox, self.irGainSl))
         irTbl.td(chkbox)
         irTbl.td(gui.Label(_('Disable Auto Gain')), colspan=2, align=-1)
         self.autoGainSw = chkbox
@@ -115,7 +115,7 @@ class ConfigView(object):
         devTbl.tr()
         devTbl.td(gui.Label(_('Device ID:')))
         self.devIdSlt = gui.Select()
-        for x in xrange(0x1601,0x1609):
+        for x in range(0x1601,0x1609):
             self.devIdSlt.add('0x%x' % x, x)
         devTbl.td(self.devIdSlt)
 
@@ -167,7 +167,7 @@ class ConfigView(object):
         calTbl.td(gui.Spacer(10,5))
         calTbl.td(self.calDlSl)
         txt = gui.Input(size=5)
-        self.calDlSl.connect(gui.CHANGE, _slChange, (self.calDlSl, txt))
+        self.calDlSl.connect(gui.CHANGE, _slChange, *(self.calDlSl, txt))
         txt.focusable = False
         self.calDlSl.send(gui.CHANGE)
         calTbl.td(gui.Spacer(10,5))

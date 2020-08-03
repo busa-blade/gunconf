@@ -12,7 +12,7 @@ def action_from_value(pValue):
 
 def action_to_value(pAction):
     if pAction.startswith('button'):
-        print "button id ", int(pAction[len('button'):])
+        print ("button id:%d" % int(pAction[len('button'):]))
         return 0x90+int(pAction[len('button'):])
     if 'left'==pAction:
         return 0x98
@@ -127,6 +127,7 @@ def config_to_buffer(pCnf, pBuf):
 
 def dyn_data_from_buffer(pBuffer):
     """ parse dynamic data from buffer """
+    #print (f"Pbuffer is {pBuffer}")
     data = {}
     data['x'] = pBuffer[0] << 8 | pBuffer[1]
     data['y'] = pBuffer[2] << 8 | pBuffer[3]
