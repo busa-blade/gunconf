@@ -2,6 +2,7 @@ import argparse
 from gunconf.ui.gunapp import GunApp
 from gunconf.controller import Controller
 
+
 def parseArgs():
     """ parse arguments """
     parser = argparse.ArgumentParser(description='gun configuration utility')

@@ -14,7 +14,7 @@ gettext.install('gettext_example', 'locale', names=['ngettext'])
 def logTo(fileNm=None, level=logging.WARNING):
     """ set log format and output """
     # reset other handlers
-    logging.root.handlers = []
+    #    logging.root.handlers = []
 
     fmt='%(levelname)-7s | %(asctime)-23s | %(name)-8s | %(message)s'
     logging.basicConfig(format=fmt, filename=fileNm,
@@ -22,13 +22,17 @@ def logTo(fileNm=None, level=logging.WARNING):
 
 # set a default logging level if none is set
 if len(logging.root.handlers) == 0:
-    lvlVar = os.environ.get('GCF_LOG_LEVEL')
+    lvlVar = os.getenv('GCF_LOG_LEVEL')
+    if not (lvlVar == None):
+        print(f"Logging level is set to '{lvlVar}'")
     level = logging.WARNING
     if 'debug' == lvlVar:
         level = logging.DEBUG
     elif 'info' == lvlVar:
         level = logging.INFO
 
-    flVar = os.environ.get('GCF_LOG_FILE')
+    flVar = os.getenv('GCF_LOG_FILE')
+    if not (flVar == None):
+        print (f"Logging output to file {flVar}")
 
     logTo(fileNm=flVar, level=level)
